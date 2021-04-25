@@ -1,0 +1,22 @@
+FROM golang:1.16
+
+ENV GO111MODULE=on
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+
+ARG APP_PATH=/go/workspace
+WORKDIR ${APP_PATH}
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY . .
+
+RUN go build keepencrypt
+
+FROM alpine:latest
+WORKDIR /keepApp
+COPY --from=0 /go/workspace/keepencrypt .
+EXPOSE 9000
+CMD ./keepencrypt

@@ -1,0 +1,32 @@
+version: '3.0'
+services: 
+  postgres:
+    image: postgres:13.2-alpine
+    ports:
+      - 5440:54432
+    container_name: keep-db
+    volumes: 
+      - ~/.keepEncrypted/postgres:/var/lib/postgresql/data/pgdata
+      - ./config/postgres:/docker-entrypoint-initdb.d
+    environment: 
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=keep
+      - POSTGRES_USER=developer
+      - POSTGRES_PASSWORD=d3v3l0p1ng
+    networks: 
+      - keep_network
+  app:
+    build: 
+      dockerfile: dockerfile
+      context: ./build
+    ports:
+      - 9000:9000
+    container_name: keep-app
+    depends_on: 
+      - postgres
+    networks: 
+      -keep_network
+networks: 
+  keep_network:
+
+  
